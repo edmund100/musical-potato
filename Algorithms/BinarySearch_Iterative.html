@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <style>
+      div { font-size:xx-large}
+
+      .target {
+         margin-left:100px;border:1px dashed black; display:inline-block
+      }
+
+      span {
+         float: left;
+         width: 50px;
+         align-content:center;
+         font-size: xx-large;
+         border-color: gray;
+         border-style:dotted;
+      }
+
+      .low {
+         font-weight: bold;
+         background-color: lightblue;
+         border-color: black;
+         border-style: solid solid solid solid;
+      }
+
+      .mid {
+         font-weight: bold;
+         background-color: yellow;
+         border-color: black;
+         border-style: solid solid solid solid;
+      }
+
+      .high {
+         font-weight: bold;
+         background-color: lightsalmon;
+         border-color: black;
+         border-style: solid solid solid solid;
+      }
+
+</style>
+<body>
+  <div style="text-align:center">Binary Search</div>
+  <div style="height:50px"></div>
+  <div class="target" id="target"></div>
+</body>
+<script>
+  function delay(n){
+    return new Promise(function(resolve){
+      setTimeout(resolve,n*1000);
+    });
+  }
+
+  function getTargetElement(index){
+         return document.getElementById("arrayElement" + index);        
+  }
+
+  function removeClasses(){
+    removeClass("high");
+    removeClass("low");
+  }
+
+  function removeClass(className){
+    const elements = document.getElementsByClassName(className);
+    for (let index = 0; index < elements.length; ++index){
+      elements[index].classList.remove(className);
+    }
+  }
+
+  async function binarySearch(arr, x)
+  {
+    let n = arr.length;
+    let low = 0;
+    let high = n - 1;
+
+    while (low <= high)
+    {
+      await delay(2);
+
+      removeClasses();
+ 
+      let mid = Math.floor((low+high) / 2);
+      if (x === arr[mid])
+      {
+        getTargetElement(mid).classList.add("mid");
+        return mid;
+      }
+
+      getTargetElement(high).classList.add("high");
+      getTargetElement(low).classList.add("low");
+
+      if(x < arr[mid])
+      {
+        high = mid - 1;
+      }
+      else
+      {
+        low = mid +1;
+      }
+    }
+
+    return -1;
+  }
+
+  const itemToSearch = 32;
+  const item = Number(itemToSearch);
+
+  const arrayToSearch = [2, 4, 5, 7, 13, 14, 15, 23, 31, 32, 33, 56, 72, 89];
+
+  // Generate html
+  let targetDiv = document.getElementById("target");
+  for (var index = 0; index < arrayToSearch.length; ++index){
+      let newSpan = document.createElement("span");
+      newSpan.id="arrayElement" + index;
+      newSpan.style.textAlign = "center";
+      newSpan.style.borderWidth = "2px";
+      newSpan.innerText = arrayToSearch[index];
+      newSpan.classList.add("arrayElement");
+      targetDiv.append(newSpan)
+  }
+
+  console.log(binarySearch(arrayToSearch, item));
+</script>
+</html>

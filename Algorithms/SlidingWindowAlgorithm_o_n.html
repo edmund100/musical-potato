@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+   <style>
+      div { font-size:xx-large}
+
+      span {
+         float: left;
+         width: 40px;
+         align-content:center;
+         font-size: xx-large;
+      }
+
+      .target {
+         margin-left:100px;border:1px dashed black; display:inline-block
+      }
+
+      .normal {
+         font-weight: normal;
+         background-color: transparent;
+      }
+
+      .active {
+         font-weight: bold;
+         background-color: yellow;
+         border-color: black
+      }
+
+      .activeBoxSingle {
+         border-style: solid solid solid solid;
+      }
+
+      .activeBoxRight {
+         border-style: solid solid solid none;
+      }
+
+      .activeBoxMiddle {
+         border-style: solid none solid none;
+      }
+
+      .activeBoxLeft {
+         border-style: solid none solid solid;
+      }
+
+   </style>
+   <body>
+      <div style="text-align:center">Sliding Window</div>
+      <div style="height:50px"></div>
+      <div style="margin-left:100px;">
+         <div style="display:inline-block">Running Sum:</div>
+         <div id="runningSum" style="display:inline-block">0</div>
+      </div>
+      <div style="margin-left:100px;">
+         <div style="display:inline-block">Max Sum:</div>
+         <div id="maxSum" style="display:inline-block">0</div>
+      </div>
+      <div style="height:20px"></div>
+      <div class="target" id="target"></div>
+   </body>
+   <script>
+      array = [4,2,1,7,8,1,2,8,1,0];
+      const numberOfElements = 3;
+
+      function delay(n){
+         return new Promise(function(resolve){
+            setTimeout(resolve,n*1000);
+         });
+      }
+
+      function getTargetElement(index){
+         return document.getElementById("arrayElement" + index);        
+      }
+
+      function updateText(id, innerText){
+         document.getElementById(id).innerText = innerText;
+      }
+
+      function setBorderStyleById(id, borderStyleClass){
+         getTargetElement(id).classList.add(borderStyleClass);
+      }
+
+      async function maxSumOfSubarray(arr, k) {
+         let max = 0;
+         let runningSum = 0;
+
+         for (let index = 0; index < arr.length ; index++) {
+            await delay(1);
+
+            let spanElm = getTargetElement(index);
+            spanElm.classList.add("active");
+
+            if (index == 0){
+               spanElm.classList.add("activeBoxSingle");
+            } else {
+               spanElm.classList.remove("activeBoxSingle");
+               spanElm.classList.add("activeBoxRight");
+
+               for (let subIndex = index; (subIndex > index - k) && (subIndex > 0); --subIndex)
+               {
+                  getTargetElement(subIndex - 1).classList.remove("activeBoxSingle");
+                  getTargetElement(subIndex - 1).classList.remove("activeBoxRight");
+                  setBorderStyleById(subIndex - 1, "activeBoxMiddle");
+               }
+
+               let leftSide = index - k + 1 > 0 ? index - k + 1 : 0;
+               setBorderStyleById(leftSide, "activeBoxLeft");           
+            }
+                     
+            runningSum += arr[index];
+
+            updateText("runningSum", runningSum);
+         
+            if (index >= k - 1) {
+               if (index >= k){
+                  let prevElm = getTargetElement(index - k);
+                  prevElm.className = "normal";
+                  prevElm.classList.remove("activeBoxLeft");
+               }
+
+               max = Math.max(runningSum, max);
+
+               updateText("maxSum", max);
+            
+               runningSum -= arr[index - (k - 1)];
+            }
+         }
+
+         return max;
+      }
+
+      // Generate html
+      let targetDiv = document.getElementById("target");
+      for (var index = 0; index < array.length; ++index){
+         let newSpan = document.createElement("span");
+         newSpan.id="arrayElement" + index;
+         newSpan.style.textAlign = "center";
+         newSpan.style.borderWidth = "2px";
+         newSpan.innerText = array[index];
+         targetDiv.append(newSpan)
+      }
+
+      maxSumOfSubarray(array, numberOfElements);
+
+   </script>
+</html>
+
